@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 data_file = "StudyTime.csv"
-subjects = ["Stats", "Reinforcement", "Financial"]
+subjects = []
 
 
 def select_subject():
