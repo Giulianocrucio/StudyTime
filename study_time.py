@@ -5,10 +5,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 data_file = "StudyTime.csv"
-subjects = []
+if os.path.exists(data_file):
+    df = pd.read_csv(data_file)
+    subjects = df["Subject"].unique().tolist()
+else:
+    subjects = []
 
-
-def select_subject():
+def select_subject(subjects):
     print("What subject are you studying?")
     for i, subj in enumerate(subjects, start=1):
         print(f"{i}. {subj}")
@@ -24,7 +27,7 @@ def select_subject():
         return subjects[choice - 1]
     else:
         print("Invalid choice.")
-        return select_subject()
+        return select_subject(subjects)
 
 
 def format_time(time):
@@ -34,11 +37,11 @@ def format_time(time):
         rem_seconds = time % 3600
         min = int(rem_seconds // 60)
         sec = int(rem_seconds % 60)
-        return f"{hours} hours, {min} min and {sec} sec"
+        return f"{hours} h {min} min {sec} sec"
     else:
         min = int(time // 60)
         sec = int(time % 60)
-        return f"{min} min and {sec} sec"
+        return f"{min} min {sec} sec"
 
 
 def start_stopwatch():
@@ -95,7 +98,7 @@ def show_statistics():
 
     df = pd.read_csv(data_file)
 
-    print("\n📊 Study Statistics 📊")
+    print("\n====📊 Study Statistics 📊====")
 
     # Total minutes per subject
     print("\nTotal minutes per subject:")
@@ -121,6 +124,8 @@ def show_plots():
     plt.ylabel("")
     plt.show()
 
+def add_time():
+    pass
 # ---------- MAIN PROGRAM ----------
 
 
@@ -135,7 +140,7 @@ def main():
         choice = input("Choose an option: ").strip()
 
         if choice == "1":
-            subject = select_subject()
+            subject = select_subject(subjects)
             minutes = start_stopwatch()
             log_study_time(subject, minutes)
         elif choice == "2":
