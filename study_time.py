@@ -107,8 +107,14 @@ def show_statistics():
 
     # Daily totals
     print("\nTotal minutes per day:")
+    df["Date"] = pd.to_datetime(df["Date"])
     df_date = df.groupby("Date")["Seconds"].sum()
-    print(df_date.apply(format_time))
+    # Create complete date range from first study day to today
+    full_range = pd.date_range(start=df["Date"].min(), end=pd.Timestamp.today())
+
+    # Reindex → missing days become NaN → fill with 0
+    df_date_full = df_date.reindex(full_range, fill_value=0)
+    print(df_date_full.apply(format_time))
 
     # Overall total
     total_all = df["Seconds"].sum()
