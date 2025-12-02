@@ -93,9 +93,9 @@ def log_study_time(subject, seconds, start_time):
     # Create the new row for this session
     new_row = {
         "Date": today, 
-        "Start Time": start_time_str,
         "Subject": subject, 
-        "Seconds": seconds
+        "Seconds": seconds,
+        "Start Time": start_time_str
     }
 
     # Append the row
