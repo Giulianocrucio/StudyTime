@@ -1,10 +1,10 @@
 import os
-import time
 from datetime import datetime
-
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# importing the cvs in which to record study sessions
+# subjects = list of subjects to study
 data_file = "StudyTime.csv"
 if os.path.exists(data_file):
     df = pd.read_csv(data_file)
@@ -14,6 +14,9 @@ else:
 
 
 def select_subject(subjects):
+    """
+    functions that allows the user to select which subject to study
+    """
     print("What subject are you studying?")
     for i, subj in enumerate(subjects, start=1):
         print(f"{i}. {subj}")
@@ -33,7 +36,10 @@ def select_subject(subjects):
 
 
 def format_time(time):
-    # prints time when given in seconds
+    """
+    prints time when given in seconds
+    """
+    # ensures that time is an integer
     time = time if type(time) == int else int(time)
     if time >= 3600:
         hours = int(time // 3600)
@@ -48,14 +54,22 @@ def format_time(time):
 
 
 def start_stopwatch():
+    """
+    Function that allows to keep track of time
+    """
     print("Stopwatch started!")
     print("Commands:")
     print("  [c]  check elapsed time")
     print("  [s]  stop and save session")
 
+    # take the initial time as a date, so even if the program temporary stops
+    # running then we can take the true time spent. Moreover we can return
+    # this time for some statistics
     start_time = datetime.now()
 
     while True:
+        # this allows to check the time passed until now in this session
+        # or to stop the stopwatch
         cmd = input("Enter command (c/s): ").strip().lower()
 
         if cmd == "c":
@@ -65,15 +79,8 @@ def start_stopwatch():
 
         elif cmd == "s":
             end_time = datetime.now()
-            elapsed_seconds = end_time - start_time
-            elapsed_seconds = (
-                elapsed_seconds
-                if type(elapsed_seconds) == int
-                else int(elapsed_seconds.total_seconds())
-            )  # transform to seconds and consider integer not float
-            print(
-                f"You've studied for {format_time(elapsed_seconds)}\n"
-            )
+            elapsed_seconds = (end_time - start_time).total_seconds()
+            print(f"You've studied for {format_time(elapsed_seconds)}\n")
             return elapsed_seconds, start_time
 
         else:
@@ -81,21 +88,26 @@ def start_stopwatch():
 
 
 def log_study_time(subject, seconds, start_time):
+    """
+    register the time of the session in the csv file
+    """
+    # date (first column)
     today = datetime.now().strftime("%Y-%m-%d")
 
+    # time at which we have started the session
     start_time_str = start_time.strftime("%H:%M")
     # Load existing CSV or create a new one
     if os.path.exists(data_file):
         df = pd.read_csv(data_file)
     else:
-        df = pd.DataFrame(columns=["Date",  "Subject", "Seconds", "Start Time"])
+        df = pd.DataFrame(columns=["Date", "Subject", "Seconds", "Start Time"])
 
     # Create the new row for this session
     new_row = {
-        "Date": today, 
-        "Subject": subject, 
+        "Date": today,
+        "Subject": subject,
         "Seconds": seconds,
-        "Start Time": start_time_str
+        "Start Time": start_time_str,
     }
 
     # Append the row
@@ -108,6 +120,9 @@ def log_study_time(subject, seconds, start_time):
 
 
 def show_statistics():
+    """
+    Prints some statistics related to previous study sessions
+    """
     if not os.path.exists(data_file):
         print("No study data yet.")
         return
@@ -139,6 +154,9 @@ def show_statistics():
 
 
 def show_plots():
+    """
+    Shows a pie chart with the different subjects
+    """
     df = pd.read_csv(data_file)
     df_subj = df.groupby("Subject")["Seconds"].sum()
 
