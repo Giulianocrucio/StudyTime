@@ -70,6 +70,7 @@ def start_stopwatch():
 
         elif cmd == "s":
             end_time = datetime.now()
+            elapsed_seconds = end_time - start_time
             elapsed_seconds = (
                 elapsed_seconds
                 if type(elapsed_seconds) == int
@@ -78,23 +79,29 @@ def start_stopwatch():
             print(
                 f"You've studied for {format_time(elapsed_seconds)}\n"
             )
-            return elapsed_seconds
+            return elapsed_seconds, start_time
 
         else:
             print("Invalid command. Use c/s.\n")
 
 
-def log_study_time(subject, seconds):
+def log_study_time(subject, seconds, start_time):
     today = datetime.now().strftime("%Y-%m-%d")
 
+    start_time_str = start_time.strftime("%H:%M")
     # Load existing CSV or create a new one
     if os.path.exists(data_file):
         df = pd.read_csv(data_file)
     else:
-        df = pd.DataFrame(columns=["Date", "Subject", "Seconds"])
+        df = pd.DataFrame(columns=["Date",  "Subject", "Seconds", "Start Time"])
 
     # Create the new row for this session
-    new_row = {"Date": today, "Subject": subject, "Seconds": seconds}
+    new_row = {
+        "Date": today, 
+        "Start Time": start_time_str,
+        "Subject": subject, 
+        "Seconds": seconds
+    }
 
     # Append the row
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -165,8 +172,8 @@ def main():
 
         if choice == "1":
             subject = select_subject(subjects)
-            minutes = start_stopwatch()
-            log_study_time(subject, minutes)
+            elapsed_seconds, start_time = start_stopwatch()
+            log_study_time(subject, elapsed_seconds, start_time)
         elif choice == "2":
             show_statistics()
         elif choice == "3":
