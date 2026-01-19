@@ -127,6 +127,15 @@ def log_study_time(subject, seconds, start_time):
 
     print(f"You have just studied {subject} for {format_time(seconds)}.\n")
 
+    # computing the total time studyed during the actual day
+    df["Date"] = pd.to_datetime(df["Date"]).dt.normalize()
+
+    today = pd.Timestamp.today().normalize()
+
+    seconds_today = df.loc[df["Date"] == today, "Seconds"].sum()
+
+    print(f"Today in total you've studied {format_time(seconds_today)}\n")
+
 
 def weekly_df(df, past_weeks=1):
     """
